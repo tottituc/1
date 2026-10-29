@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRESUPUESTADOR - TOTTI</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            DEFAULT: 'var(--brand-color, #2563eb)',
+                            dark: '#1d4ed8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf.js para exportación a A4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print { display: none !important; }
+        }
+        .a4-wrapper {
+            transition: transform 0.2s ease;
+            transform-origin: top center;
+        }
+        .a4-sheet {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 16mm 18mm;
+            background: white;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08), 0 0 15px rgba(0,0,0,0.02);
+            margin: 0 auto;
+            border-radius: 12px;
+        }
+        .logo-aspect-fit {
+            object-fit: contain;
+            object-position: center;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        .tab-btn.active {
+            background-color: white;
+            color: var(--brand-color, #2563eb);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-weight: 700;
+        }
+        .dark .tab-btn.active {
+            background-color: #1e293b;
+            color: #60a5fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen selection:bg-blue-500 selection:text-white">
+
+    <!-- Barra Superior Alineada y Equilibrada -->
+    <header class="max-w-[95%] mx-auto my-4 no-print bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl px-6 py-3.5 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 sticky top-3 z-40">
+        
+        <!-- Identidad -->
+        <div class="flex items-center space-x-3.5">
+            <div id="brand-icon-box" class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center text-base font-black shadow-lg shadow-blue-500/20 transition-all duration-300 shrink-0">
+                <i class="fa-solid fa-shirt"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">PRESUPUESTADOR - TOTTI</h1>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Panel de Producción & Costos</p>
+            </div>
+        </div>
+
+        <!-- Bloque Central de Apoyo / Cafecito (Perfectamente Centrado) -->
+        <div class="flex items-center space-x-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200/80 dark:border-amber-800/50 px-4 py-1.5 rounded-xl shadow-xs">
+            <div class="text-xs text-amber-900 dark:text-amber-200">
+                <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-mug-hot text-amber-600 dark:text-amber-400 text-sm animate-bounce"></i> ¿Te sirve la herramienta?</p>
+            </div>
+            <div class="flex items-center space-x-1.5">
+                <a href="https://mpago.la/2qJn5Yq" target="_blank" class="bg-white dark:bg-slate-800 hover:bg-amber-100/80 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-2.5 py-1 rounded-lg text-[11px] font-bold transition shadow-xs flex items-center gap-1">
+                    ☕ $3.000
+                </a>
+                <a href="https://mpago.la/1EjVbRw" target="_blank" class="bg-white dark:bg-slate-800 hover:bg-amber-100/80 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-2.5 py-1 rounded-lg text-[11px] font-bold transition shadow-xs flex items-center gap-1">
+                    ☕ $5.000
+                </a>
+            </div>
+        </div>
+
+        <!-- Botones de Acción Global -->
+        <div class="flex items-center space-x-2">
+            <button id="btn-toggle-dark" title="Modo Oscuro" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition flex items-center justify-center">
+                <i class="fa-solid fa-moon dark:hidden"></i>
+                <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+            </button>
+            <button id="btn-settings" title="Ajustes de Marca" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition flex items-center justify-center">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+            <button id="btn-reset" title="Reiniciar" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-600 dark:text-slate-400 hover:text-red-600 rounded-xl transition flex items-center justify-center">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            <button id="btn-export-pdf" class="brand-bg hover:opacity-90 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-blue-500/15 transition flex items-center space-x-2 active:scale-95">
+                <i class="fa-solid fa-file-pdf text-sm"></i>
+                <span>Exportar PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal (Grid Moderno) -->
+    <main class="max-w-[95%] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-6 items-start pb-12">
+        
+        <!-- COLUMNA IZQUIERDA: Pestañas de Configuración -->
+        <div class="xl:col-span-5 space-y-4 no-print">
+            
+            <!-- Navegación de Pestañas Estilizada -->
+            <div class="bg-slate-200/70 dark:bg-slate-900 p-1.5 rounded-2xl grid grid-cols-4 gap-1 text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-800">
+                <button id="tab-btn-order" onclick="switchTab('order')" class="tab-btn active py-2.5 px-2 rounded-xl transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-cart-shopping text-[11px]"></i>
+                    <span>Pedido</span>
+                </button>
+                <button id="tab-btn-insumos" onclick="switchTab('insumos')" class="tab-btn py-2.5 px-2 rounded-xl transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-boxes-stacked text-[11px]"></i>
+                    <span>Insumos</span>
+                </button>
+                <button id="tab-btn-models" onclick="switchTab('models')" class="tab-btn py-2.5 px-2 rounded-xl transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-shirt text-[11px]"></i>
+                    <span>Modelos</span>
+                </button>
+                <button id="tab-btn-rules" onclick="switchTab('rules')" class="tab-btn py-2.5 px-2 rounded-xl transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-sliders text-[11px]"></i>
+                    <span>Reglas</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: PEDIDO Y CLIENTE -->
+            <div id="tab-content-order" class="space-y-4">
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <i class="fa-solid fa-user-tag text-blue-500"></i>
+                        <span>Cliente & Fecha</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Cliente / Equipo</label>
+                            <input type="text" id="input-cliente" value="Club Deportivo" class="w-full px-3.5 py-2.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 font-semibold bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-100">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Fecha</label>
+                            <input type="text" id="input-fecha" value="" class="w-full px-3.5 py-2.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 font-semibold text-center bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-list-check text-blue-500"></i>
+                            <span>Prendas en el Pedido</span>
+                        </div>
+                        <button id="btn-add-order-item" class="text-xs brand-text font-bold hover:bg-blue-50 dark:hover:bg-slate-800 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5 border border-blue-100 dark:border-slate-800">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span>Agregar Prenda</span>
+                        </button>
+                    </div>
+                    <div id="order-items-container" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Modificador Externo para Textos de Pie de Página -->
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <i class="fa-solid fa-text-height text-blue-500"></i>
+                        <span>Tamaño de Textos del Pie de Página</span>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Escala de Fuente:</label>
+                            <span id="footer-font-size-label" class="text-xs font-extrabold brand-text">11px</span>
+                        </div>
+                        <input type="range" id="footer-font-size-range" min="9" max="16" step="1" value="11" class="w-full accent-blue-600 cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-3">
+                    <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <i class="fa-solid fa-chart-line text-blue-500"></i>
+                        <span>Rentabilidad</span>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Margen de Ganancia General (%)</label>
+                        <div class="relative">
+                            <input type="number" id="margin-beneficio" value="100" step="5" min="0" class="w-full px-3.5 py-2.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-extrabold brand-text bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-100">
+                            <span class="absolute right-3.5 top-2.5 text-xs text-slate-400 font-bold">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: INSUMOS -->
+            <div id="tab-content-insumos" class="space-y-4 hidden">
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-boxes-stacked text-blue-500"></i>
+                            <span>Catálogo de Insumos</span>
+                        </div>
+                        <button id="btn-add-insumo" class="text-xs brand-text font-bold hover:bg-blue-50 dark:hover:bg-slate-800 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5 border border-blue-100 dark:border-slate-800">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span>Nuevo Insumo</span>
+                        </button>
+                    </div>
+                    <div id="insumos-container" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <!-- TAB 3: MODELOS -->
+            <div id="tab-content-models" class="space-y-4 hidden">
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-shirt text-blue-500"></i>
+                            <span>Modelos & Recetas</span>
+                        </div>
+                        <button id="btn-add-model" class="text-xs brand-text font-bold hover:bg-blue-50 dark:hover:bg-slate-800 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5 border border-blue-100 dark:border-slate-800">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span>Nuevo Modelo</span>
+                        </button>
+                    </div>
+                    <div id="models-container" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: REGLAS -->
+            <div id="tab-content-rules" class="space-y-4 hidden">
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <i class="fa-solid fa-ruler-combined text-blue-500"></i>
+                        <span>Ajustes por Talle (%)</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Descuento Niño</label>
+                            <input type="number" id="val-pct-nino" value="25" class="w-full px-3 py-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Recargo Especial</label>
+                            <input type="number" id="val-pct-especial" value="30" class="w-full px-3 py-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <i class="fa-solid fa-tags text-blue-500"></i>
+                        <span>Escala de Descuentos por Cantidad</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">≥ 5 prendas</label>
+                            <input type="number" id="val-disc-5" value="15" class="w-full px-2.5 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">≥ 10 prendas</label>
+                            <input type="number" id="val-disc-10" value="25" class="w-full px-2.5 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">≥ 20 prendas</label>
+                            <input type="number" id="val-disc-20" value="40" class="w-full px-2.5 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">≥ 50 prendas</label>
+                            <input type="number" id="val-disc-50" value="50" class="w-full px-2.5 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-extrabold text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-shield-halved text-blue-500"></i>
+                            <span>Precio Piso & Amigo</span>
+                        </div>
+                        <label class="flex items-center space-x-1.5 text-xs font-bold brand-text cursor-pointer select-none">
+                            <input type="checkbox" id="check-use-base-price" class="w-4 h-4 rounded border-slate-300">
+                            <span>Activar</span>
+                        </label>
+                    </div>
+                    <div id="base-price-box">
+                        <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Piso Mínimo Unitario ($)</label>
+                        <input type="number" id="input-precio-unitario-base" value="30000" step="500" class="w-full px-3 py-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl font-bold brand-text bg-slate-50 dark:bg-slate-800">
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <label class="flex items-center space-x-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                            <input type="checkbox" id="check-show-friend" class="w-4 h-4 rounded border-slate-300">
+                            <span class="font-bold text-slate-800 dark:text-slate-200">Mostrar Precio Amigo</span>
+                        </label>
+                        <div class="flex items-center space-x-1">
+                            <input type="number" id="val-pct-friend" value="10" class="w-14 px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-lg font-bold text-center bg-slate-50 dark:bg-slate-800">
+                            <span class="text-xs text-slate-400 font-bold">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: Vista Previa Hoja A4 Perfectamente Encuadrada -->
+        <div class="xl:col-span-7 flex justify-center overflow-x-auto py-2">
+            <div class="a4-wrapper" style="transform: scale(0.88);">
+                <div id="pdf-content" class="a4-sheet flex flex-col justify-between text-slate-800">
+                    <div>
+                        <!-- Encabezado con Logo Dinámico e interlineado óptimo -->
+                        <div class="flex justify-between items-center border-b border-slate-200/90 pb-4 mb-4">
+                            <div class="flex items-center space-x-3.5">
+                                <div id="logo-container" class="w-16 h-16 bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-1.5 overflow-hidden shadow-xs shrink-0">
+                                    <svg id="default-svg-logo" class="w-full h-full brand-text" viewBox="0 0 846.66 846.66" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M179.04 235.75c40.79,22.07 73.78,63.04 77.65,108.64l-0.21 337.89c2.89,38.43 21.69,77.05 55.41,97.1 6.37,3.79 17.49,7.21 25.5,10.17 14.04,20.96 31.72,39.34 48.63,50.35 2.79,1.82 5.43,3.48 7.95,5 -89.89,13.83 -180.69,-55.34 -189.08,-146.43 -0.75,-8.12 -1.84,-16.31 -1.81,-24.59l1.12 -328.74c-5.21,-22.93 -19.52,-44.1 -38.96,-57.29 -9.36,-6.35 -19.9,-10.85 -31.2,-12.8l0 86.69 0 233.29c0,15.74 19.16,47.8 29.89,59.99 2.58,2.94 10.81,9.62 16.41,14.37l-0.01 4.42c-0.03,9.03 1.08,17.79 1.91,26.75 0.86,9.38 2.49,18.56 4.81,27.47 -42.33,-12.44 -80.02,-52.86 -95.17,-93.56 -2.77,-7.43 -9.58,-27.35 -9.58,-33.99l0 -245.3 0 -133.24c2.49,-8.03 48.93,-2.61 57.9,-0.71 13.27,2.82 26.41,7.79 38.84,14.52zm488.58 0c-40.79,22.07 -73.78,63.04 -77.65,108.64l0.21 337.89c-2.89,38.43 -21.69,77.05 -55.41,97.1 -6.37,3.79 -17.49,7.21 -25.5,10.17 -14.04,20.96 -31.72,39.34 -48.63,50.35 -2.79,1.82 -5.43,3.48 -7.95,5 89.89,13.83 180.69,-55.34 189.08,-146.43 0.75,-8.12 1.84,-16.31 1.81,-24.59l-1.12 -328.74c5.21,-22.93 19.52,-44.1 38.96,-57.29 9.36,-6.35 19.9,-10.85 31.2,-12.8l0 86.69 0 233.29c0,15.74 -19.16,47.8 -29.89,59.99 -2.58,2.94 -10.81,9.62 -16.41,14.37l0.01 4.42c0.03,9.03 -1.08,17.79 -1.91,26.75 -0.86,9.38 -2.49,18.56 -4.81,27.47 42.33,-12.44 80.02,-52.86 95.17,-93.56 2.77,-7.43 9.58,-27.35 9.58,-33.99l0 -245.3 0 -133.24c-2.49,-8.03 -48.93,-2.61 -57.9,-0.71 -13.27,2.82 -26.41,7.79 -38.84,14.52zm-244.21 597.01l0 0c0,0 0,0 0,0l-0.08 0 -0.08 0c0,0 0,0 0,0l0 0c-6.84,-0.29 -13.31,-4.43 -24.82,-11.93 -29.6,-19.28 -65.59,-69.83 -65.59,-105.97l0 -540.58 -296.83 0 0 -174.29 387.32 0 387.33 0 0 174.29 -296.84 0 0 540.58c0,36.14 -35.99,86.69 -65.59,105.97 -11.51,7.5 -17.98,11.64 -24.82,11.93zm-0.08 -781.02l-335.58 0.01 0 73.52 296.84 0 0 578.69c0,10.24 10.27,37.18 15.82,46.82 3.28,5.71 16.76,25.35 22.92,25.36 6.16,-0.01 19.64,-19.65 22.92,-25.36 5.55,-9.64 15.82,-36.58 15.82,-46.82l0 -578.69 296.84 0 0 -73.52 -335.58 -0.01z"/>
+                                    </svg>
+                                    <img id="img-logo-element" class="w-full h-full logo-aspect-fit hidden" alt="Logo">
+                                </div>
+                                <div>
+                                    <h2 id="biz-name" class="text-base font-extrabold text-slate-800 leading-tight">TOTTI Indumentaria</h2>
+                                    <p id="biz-details" class="text-[11px] text-slate-500 whitespace-pre-line mt-0.5 leading-snug">Tel: +54 9 11 0000-0000 | Instagram: @totti.tuc</p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="bg-slate-100 text-slate-700 text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider border border-slate-200">Presupuesto</span>
+                            </div>
+                        </div>
+
+                        <!-- Ficha Clara del Cliente y Fecha -->
+                        <div class="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/80 mb-4 flex justify-between items-center text-xs">
+                            <div>
+                                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">Cliente / Equipo</span>
+                                <span id="display-cliente" class="font-extrabold text-slate-800 text-sm">Club Deportivo</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">Fecha de Emisión</span>
+                                <span id="display-fecha" class="font-bold text-slate-700 text-xs">--/--/----</span>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Presupuesto -->
+                        <div class="mb-4">
+                            <h4 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Detalle del Pedido</h4>
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr id="table-header-bg" class="text-white">
+                                        <th class="p-2.5 rounded-l-lg font-bold">Prenda / Talle</th>
+                                        <th class="p-2.5 font-bold text-center">Cantidad</th>
+                                        <th class="p-2.5 font-bold text-center">Dto. Vol.</th>
+                                        <th class="p-2.5 font-bold text-right">Unitario</th>
+                                        <th id="th-friend-price" class="p-2.5 font-bold text-right hidden">Precio Amigo</th>
+                                        <th class="p-2.5 rounded-r-lg text-right font-bold">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pricing-table-body" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Total General -->
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Total General</span>
+                                <p id="display-total-unidades" class="text-[11px] text-slate-400 font-semibold mt-0.5">Total: 0 prendas</p>
+                            </div>
+                            <div class="text-right">
+                                <span id="display-total-general" class="text-xl font-black brand-text">$0</span>
+                            </div>
+                        </div>
+
+                        <!-- Secciones inferiores libres y editables -->
+                        <div class="border-t border-slate-200/80 pt-3 text-left text-slate-600 space-y-2">
+                            <div id="footer-text-container" class="space-y-2" style="font-size: 11px;">
+                                <p id="editable-terms" contenteditable="true" class="hover:bg-slate-50 p-2 rounded-lg transition outline-dashed outline-1 outline-slate-300 leading-snug">
+                                    Se requiere un 50% de seña para iniciar la confección y el saldo restante contra entrega.
+                                </p>
+                                <p id="editable-delivery" contenteditable="true" class="hover:bg-slate-50 p-2 rounded-lg transition outline-dashed outline-1 outline-slate-300 leading-snug">
+                                    7 a 10 días hábiles de producción. ¡Gracias por confiar en nuestro trabajo!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Configuración -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 space-y-4">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3">
+                <h3 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">Configuración de Marca</h3>
+                <button id="btn-close-settings-x" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Nombre del Negocio</label>
+                <input type="text" id="modal-biz-name" class="w-full px-3.5 py-2.5 text-xs border dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Detalles de Contacto</label>
+                <textarea id="modal-biz-details" rows="3" class="w-full px-3.5 py-2.5 text-xs border dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Color Principal</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="color" id="modal-brand-color-picker" value="#2563eb" class="w-10 h-9 border dark:border-slate-700 rounded-xl cursor-pointer bg-transparent">
+                        <input type="text" id="modal-brand-color-hex" value="#2563eb" class="w-full px-2.5 py-2 text-xs border dark:border-slate-700 dark:bg-slate-800 rounded-xl font-mono uppercase">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Logo (SVG, PNG, JPG)</label>
+                    <input type="file" id="modal-biz-logo" accept="image/*,.svg" class="w-full text-[11px] text-slate-500 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 dark:file:bg-slate-800 file:text-blue-700 dark:file:text-blue-300">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-3 border-t dark:border-slate-800">
+                <button id="btn-close-settings" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancelar</button>
+                <button id="btn-save-settings" class="px-4 py-2 text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 rounded-xl shadow-md">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script General de la Aplicación -->
+    <script>
+        // Control Externo para el Tamaño de los Textos del Pie de Página
+        const footerFontSizeRange = document.getElementById('footer-font-size-range');
+        const footerFontSizeLabel = document.getElementById('footer-font-size-label');
+        const footerTextContainer = document.getElementById('footer-text-container');
+
+        const savedFooterSize = localStorage.getItem('taller_footer_font_size') || '11';
+        footerFontSizeRange.value = savedFooterSize;
+        footerFontSizeLabel.textContent = savedFooterSize + 'px';
+        footerTextContainer.style.fontSize = savedFooterSize + 'px';
+
+        footerFontSizeRange.addEventListener('input', (e) => {
+            const val = e.target.value;
+            footerTextContainer.style.fontSize = val + 'px';
+            footerFontSizeLabel.textContent = val + 'px';
+            localStorage.setItem('taller_footer_font_size', val);
+        });
+
+        // Modo Oscuro
+        const btnToggleDark = document.getElementById('btn-toggle-dark');
+        function initDarkMode() {
+            const isDark = localStorage.getItem('taller_dark_mode_v30') === 'true';
+            if (isDark) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+        }
+        btnToggleDark.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('taller_dark_mode_v30', isDark);
+        });
+        initDarkMode();
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            ['order', 'insumos', 'models', 'rules'].forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-btn-${tab}`).classList.add('active');
+            document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+        }
+
+        // Datos iniciales
+        const defaultInsumos = [
+            { id: 1, name: 'Tela Principal', price: 4000, unit: 'm' },
+            { id: 2, name: 'Sublimación / Calandra', price: 450, unit: 'u' },
+            { id: 3, name: 'Avíos / Elásticos', price: 200, unit: 'u' },
+            { id: 4, name: 'Confección / Armado', price: 1500, unit: 'u' }
+        ];
+        let insumos = JSON.parse(localStorage.getItem('taller_insumos_v30')) || defaultInsumos;
+
+        const defaultModels = [
+            { 
+                id: 1, 
+                name: 'Camiseta', 
+                recipe: [{ insumoId: 1, qty: 0.8 }, { insumoId: 2, qty: 1 }, { insumoId: 3, qty: 1 }, { insumoId: 4, qty: 1 }] 
+            },
+            { 
+                id: 2, 
+                name: 'Short', 
+                recipe: [{ insumoId: 1, qty: 0.4 }, { insumoId: 2, qty: 1 }, { insumoId: 3, qty: 1 }, { insumoId: 4, qty: 1 }] 
+            }
+        ];
+        let models = JSON.parse(localStorage.getItem('taller_models_v30')) || defaultModels;
+
+        const defaultOrderItems = [
+            { modelId: 1, talle: 'adulto', qty: 10, customDiscount: '' },
+            { modelId: 2, talle: 'adulto', qty: 5, customDiscount: '' }
+        ];
+        let orderItems = JSON.parse(localStorage.getItem('taller_order_items_v30')) || defaultOrderItems;
+
+        let businessData = JSON.parse(localStorage.getItem('taller_biz_data_v30')) || {
+            name: "TOTTI Indumentaria",
+            details: "Tel: +54 9 11 0000-0000 | Instagram: @totti.indumentaria",
+            logo: "",
+            isSvg: false,
+            brandColor: "#2563eb"
+        };
+
+        const inputCliente = document.getElementById('input-cliente');
+        const inputFecha = document.getElementById('input-fecha');
+        const valPctNino = document.getElementById('val-pct-nino');
+        const valPctEspecial = document.getElementById('val-pct-especial');
+        const valDisc5 = document.getElementById('val-disc-5');
+        const valDisc10 = document.getElementById('val-disc-10');
+        const valDisc20 = document.getElementById('val-disc-20');
+        const valDisc50 = document.getElementById('val-disc-50');
+        const marginBeneficio = document.getElementById('margin-beneficio');
+        const checkUseBasePrice = document.getElementById('check-use-base-price');
+        const inputPrecioUnitarioBase = document.getElementById('input-precio-unitario-base');
+        const checkShowFriend = document.getElementById('check-show-friend');
+        const valPctFriend = document.getElementById('val-pct-friend');
+
+        const displayCliente = document.getElementById('display-cliente');
+        const displayFecha = document.getElementById('display-fecha');
+        const insumosContainer = document.getElementById('insumos-container');
+        const modelsContainer = document.getElementById('models-container');
+        const orderItemsContainer = document.getElementById('order-items-container');
+        const pricingTableBody = document.getElementById('pricing-table-body');
+        const thFriendPrice = document.getElementById('th-friend-price');
+        const displayTotalUnidades = document.getElementById('display-total-unidades');
+        const displayTotalGeneral = document.getElementById('display-total-general');
+
+        if(!inputFecha.value) inputFecha.value = new Date().toLocaleDateString();
+
+        function applyBrandTheme(colorHex) {
+            document.documentElement.style.setProperty('--brand-color', colorHex);
+            document.querySelectorAll('.brand-text').forEach(el => el.style.color = colorHex);
+            document.querySelectorAll('.brand-bg').forEach(el => el.style.backgroundColor = colorHex);
+            const brandIconBox = document.getElementById('brand-icon-box');
+            if(brandIconBox) brandIconBox.style.backgroundColor = colorHex;
+            const tableHeaderBg = document.getElementById('table-header-bg');
+            if(tableHeaderBg) tableHeaderBg.style.backgroundColor = colorHex;
+        }
+
+        function renderInsumos() {
+            insumosContainer.innerHTML = '';
+            insumos.forEach((ins, index) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center space-x-2 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-800';
+                row.innerHTML = `
+                    <input type="text" value="${ins.name}" data-index="${index}" class="ins-name-input flex-1 px-2.5 py-1.5 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                    <span class="text-xs text-slate-400 font-bold">$</span>
+                    <input type="number" value="${ins.price}" data-index="${index}" class="ins-price-input w-20 px-2 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-900">
+                    <input type="text" value="${ins.unit}" data-index="${index}" class="ins-unit-input w-12 px-1.5 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-lg font-bold text-center bg-white dark:bg-slate-900">
+                    <button data-index="${index}" class="btn-remove-ins text-slate-400 hover:text-red-500 text-xs px-1.5"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                insumosContainer.appendChild(row);
+            });
+            document.querySelectorAll('.ins-name-input').forEach(input => {
+                input.addEventListener('input', (e) => { insumos[e.target.dataset.index].name = e.target.value; saveState(); renderModels(); calculateBudget(); });
+            });
+            document.querySelectorAll('.ins-price-input').forEach(input => {
+                input.addEventListener('input', (e) => { insumos[e.target.dataset.index].price = parseFloat(e.target.value) || 0; saveState(); renderModels(); calculateBudget(); });
+            });
+            document.querySelectorAll('.ins-unit-input').forEach(input => {
+                input.addEventListener('input', (e) => { insumos[e.target.dataset.index].unit = e.target.value; saveState(); renderModels(); calculateBudget(); });
+            });
+            document.querySelectorAll('.btn-remove-ins').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = e.currentTarget.dataset.index;
+                    const idToRemove = insumos[idx].id;
+                    insumos.splice(idx, 1);
+                    models.forEach(m => { m.recipe = m.recipe.filter(r => r.insumoId !== idToRemove); });
+                    saveState(); renderInsumos(); renderModels(); calculateBudget();
+                });
+            });
+        }
+
+        document.getElementById('btn-add-insumo').addEventListener('click', () => {
+            const newId = insumos.length > 0 ? Math.max(...insumos.map(i => i.id)) + 1 : 1;
+            insumos.push({ id: newId, name: 'Nuevo Insumo', price: 0, unit: 'u' });
+            saveState(); renderInsumos(); calculateBudget();
+        });
+
+        function calculateModelTotalCost(model) {
+            let totalCost = 0;
+            model.recipe.forEach(rec => {
+                const insObj = insumos.find(i => i.id === rec.insumoId);
+                totalCost += (insObj ? insObj.price : 0) * rec.qty;
+            });
+            return totalCost;
+        }
+
+        function renderModels() {
+            modelsContainer.innerHTML = '';
+            models.forEach((model, mIndex) => {
+                let recipeHtml = '';
+                model.recipe.forEach((rec, rIndex) => {
+                    const insObj = insumos.find(i => i.id === rec.insumoId);
+                    recipeHtml += `
+                        <div class="flex items-center justify-between text-[11px] bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200/60 dark:border-slate-800">
+                            <span class="font-medium text-slate-700 dark:text-slate-300 truncate pr-2">${insObj ? insObj.name : 'Insumo eliminado'}</span>
+                            <div class="flex items-center space-x-1 shrink-0">
+                                <input type="number" step="0.05" value="${rec.qty}" data-mindex="${mIndex}" data-rindex="${rIndex}" class="model-recipe-qty w-16 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded font-bold text-center">
+                                <span class="text-slate-400 w-4">${insObj ? insObj.unit : ''}</span>
+                                <button data-mindex="${mIndex}" data-rindex="${rIndex}" class="btn-remove-recipe text-slate-300 hover:text-red-500 px-1"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+                const modelTotalCost = calculateModelTotalCost(model);
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-2.5';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="text" value="${model.name}" data-index="${mIndex}" class="model-name-input flex-1 px-2.5 py-1 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                        <button data-index="${mIndex}" class="btn-add-recipe text-[11px] brand-text font-bold hover:bg-blue-50 dark:hover:bg-slate-900 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-slate-800 flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Insumo
+                        </button>
+                        <button data-index="${mIndex}" class="btn-remove-model text-slate-400 hover:text-red-500 text-xs px-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                    <div class="space-y-1.5 pl-1">
+                        <div class="flex justify-between items-center pr-1">
+                            <span class="text-[10px] font-extrabold text-slate-400 uppercase">Receta Base:</span>
+                            <span class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                                $${Math.round(modelTotalCost).toLocaleString()}
+                            </span>
+                        </div>
+                        ${recipeHtml || '<p class="text-[11px] text-slate-400 italic">Sin insumos</p>'}
+                    </div>
+                `;
+                modelsContainer.appendChild(card);
+            });
+
+            document.querySelectorAll('.model-name-input').forEach(input => {
+                input.addEventListener('input', (e) => { models[e.target.dataset.index].name = e.target.value; saveState(); renderOrderItems(); calculateBudget(); });
+            });
+            document.querySelectorAll('.model-recipe-qty').forEach(input => {
+                input.addEventListener('input', (e) => { models[e.target.dataset.mindex].recipe[e.target.dataset.rindex].qty = parseFloat(e.target.value) || 0; saveState(); renderModels(); calculateBudget(); });
+            });
+            document.querySelectorAll('.btn-remove-recipe').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    models[e.currentTarget.dataset.mindex].recipe.splice(e.currentTarget.dataset.rindex, 1);
+                    saveState(); renderModels(); calculateBudget();
+                });
+            });
+            document.querySelectorAll('.btn-add-recipe').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const mIndex = e.currentTarget.dataset.index;
+                    const existingIds = models[mIndex].recipe.map(r => r.insumoId);
+                    const available = insumos.find(i => !existingIds.includes(i.id));
+                    if(available) {
+                        models[mIndex].recipe.push({ insumoId: available.id, qty: 1 });
+                        saveState(); renderModels(); calculateBudget();
+                    } else {
+                        alert("Todos los insumos ya están añadidos.");
+                    }
+                });
+            });
+            document.querySelectorAll('.btn-remove-model').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    models.splice(e.currentTarget.dataset.index, 1);
+                    saveState(); renderModels(); renderOrderItems(); calculateBudget();
+                });
+            });
+        }
+
+        document.getElementById('btn-add-model').addEventListener('click', () => {
+            const newId = models.length > 0 ? Math.max(...models.map(m => m.id)) + 1 : 1;
+            models.push({ id: newId, name: 'Nueva Prenda', recipe: insumos.slice(0, 2).map(i => ({ insumoId: i.id, qty: 1 })) });
+            saveState(); renderModels(); renderOrderItems(); calculateBudget();
+        });
+
+        function renderOrderItems() {
+            orderItemsContainer.innerHTML = '';
+            orderItems.forEach((item, index) => {
+                let optionsHtml = '';
+                models.forEach(m => { optionsHtml += `<option value="${m.id}" ${item.modelId === m.id ? 'selected' : ''}>${m.name}</option>`; });
+
+                const row = document.createElement('div');
+                row.className = 'bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-2.5 text-xs';
+                row.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <select data-index="${index}" class="item-model-select flex-1 px-2.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold">${optionsHtml}</select>
+                        <select data-index="${index}" class="item-talle-select px-2.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold">
+                            <option value="adulto" ${item.talle === 'adulto' ? 'selected' : ''}>Adulto</option>
+                            <option value="nino" ${item.talle === 'nino' ? 'selected' : ''}>Niño</option>
+                            <option value="especial" ${item.talle === 'especial' ? 'selected' : ''}>Especial</option>
+                        </select>
+                        <button data-index="${index}" class="btn-remove-order-item text-slate-400 hover:text-red-500 px-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200/60 dark:border-slate-700">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Cantidad</label>
+                            <input type="number" value="${item.qty}" data-index="${index}" min="1" class="item-qty-input w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg font-extrabold text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Dto. % (Opc)</label>
+                            <input type="number" value="${item.customDiscount !== undefined ? item.customDiscount : ''}" data-index="${index}" placeholder="Auto" class="item-disc-input w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg font-extrabold text-center brand-text">
+                        </div>
+                    </div>
+                `;
+                orderItemsContainer.appendChild(row);
+            });
+
+            document.querySelectorAll('.item-model-select').forEach(sel => {
+                sel.addEventListener('change', (e) => { orderItems[e.target.dataset.index].modelId = parseInt(e.target.value); saveState(); calculateBudget(); });
+            });
+            document.querySelectorAll('.item-talle-select').forEach(sel => {
+                sel.addEventListener('change', (e) => { orderItems[e.target.dataset.index].talle = e.target.value; saveState(); calculateBudget(); });
+            });
+            document.querySelectorAll('.item-qty-input').forEach(input => {
+                input.addEventListener('input', (e) => { orderItems[e.target.dataset.index].qty = parseInt(e.target.value) || 1; saveState(); calculateBudget(); });
+            });
+            document.querySelectorAll('.item-disc-input').forEach(input => {
+                input.addEventListener('input', (e) => { orderItems[e.target.dataset.index].customDiscount = e.target.value; saveState(); calculateBudget(); });
+            });
+            document.querySelectorAll('.btn-remove-order-item').forEach(btn => {
+                btn.addEventListener('click', (e) => { orderItems.splice(e.currentTarget.dataset.index, 1); saveState(); renderOrderItems(); calculateBudget(); });
+            });
+        }
+
+        document.getElementById('btn-add-order-item').addEventListener('click', () => {
+            orderItems.push({ modelId: models.length > 0 ? models[0].id : 1, talle: 'adulto', qty: 1, customDiscount: '' });
+            saveState(); renderOrderItems(); calculateBudget();
+        });
+
+        function loadSavedState() {
+            const savedState = JSON.parse(localStorage.getItem('taller_current_budget_v30'));
+            if (savedState) {
+                inputCliente.value = savedState.cliente || '';
+                if(savedState.fecha) inputFecha.value = savedState.fecha;
+                valPctNino.value = savedState.pctNino !== undefined ? savedState.pctNino : 25;
+                valPctEspecial.value = savedState.pctEspecial !== undefined ? savedState.pctEspecial : 30;
+                valDisc5.value = savedState.disc5 !== undefined ? savedState.disc5 : 15;
+                valDisc10.value = savedState.disc10 !== undefined ? savedState.disc10 : 25;
+                valDisc20.value = savedState.disc20 !== undefined ? savedState.disc20 : 40;
+                valDisc50.value = savedState.disc50 !== undefined ? savedState.disc50 : 50;
+                marginBeneficio.value = savedState.margin !== undefined ? savedState.margin : 100;
+                checkUseBasePrice.checked = !!savedState.useBasePrice;
+                inputPrecioUnitarioBase.value = savedState.precioBase || 30000;
+                checkShowFriend.checked = !!savedState.showFriend;
+                valPctFriend.value = savedState.pctFriend !== undefined ? savedState.pctFriend : 10;
+            }
+            toggleBasePriceUI();
+            updateDisplays();
+        }
+
+        function saveState() {
+            localStorage.setItem('taller_current_budget_v30', JSON.stringify({
+                cliente: inputCliente.value, fecha: inputFecha.value, pctNino: valPctNino.value, pctEspecial: valPctEspecial.value,
+                disc5: valDisc5.value, disc10: valDisc10.value, disc20: valDisc20.value, disc50: valDisc50.value,
+                margin: marginBeneficio.value, useBasePrice: checkUseBasePrice.checked, precioBase: inputPrecioUnitarioBase.value,
+                showFriend: checkShowFriend.checked, pctFriend: valPctFriend.value
+            }));
+            localStorage.setItem('taller_insumos_v30', JSON.stringify(insumos));
+            localStorage.setItem('taller_models_v30', JSON.stringify(models));
+            localStorage.setItem('taller_order_items_v30', JSON.stringify(orderItems));
+        }
+
+        function toggleBasePriceUI() {
+            const box = document.getElementById('base-price-box');
+            box.style.opacity = checkUseBasePrice.checked ? "1" : "0.4";
+            box.style.pointerEvents = checkUseBasePrice.checked ? "auto" : "none";
+        }
+        checkUseBasePrice.addEventListener('change', () => { toggleBasePriceUI(); saveState(); calculateBudget(); });
+
+        function updateDisplays() {
+            displayCliente.textContent = inputCliente.value || 'Cliente General';
+            displayFecha.textContent = inputFecha.value || '--/--/----';
+        }
+
+        function initBusinessUI() {
+            document.getElementById('biz-name').textContent = businessData.name;
+            document.getElementById('biz-details').textContent = businessData.details;
+            
+            const logoContainer = document.getElementById('logo-container');
+            const defaultSvg = document.getElementById('default-svg-logo');
+            const imgElement = document.getElementById('img-logo-element');
+
+            if (businessData.logo) {
+                if (businessData.isSvg) {
+                    if(imgElement) imgElement.classList.add('hidden');
+                    let dynamicSvgContainer = document.getElementById('dynamic-svg-wrapper');
+                    if (!dynamicSvgContainer) {
+                        dynamicSvgContainer = document.createElement('div');
+                        dynamicSvgContainer.id = 'dynamic-svg-wrapper';
+                        dynamicSvgContainer.className = 'w-full h-full flex items-center justify-center brand-text';
+                        logoContainer.appendChild(dynamicSvgContainer);
+                    }
+                    if(defaultSvg) defaultSvg.classList.add('hidden');
+                    dynamicSvgContainer.innerHTML = businessData.logo;
+                    dynamicSvgContainer.classList.remove('hidden');
+                } else {
+                    if(defaultSvg) defaultSvg.classList.add('hidden');
+                    const dynWrapper = document.getElementById('dynamic-svg-wrapper');
+                    if(dynWrapper) dynWrapper.classList.add('hidden');
+                    if(imgElement) {
+                        imgElement.src = businessData.logo;
+                        imgElement.classList.remove('hidden');
+                    }
+                }
+            } else {
+                if(defaultSvg) defaultSvg.classList.remove('hidden');
+                if(imgElement) imgElement.classList.add('hidden');
+                const dynWrapper = document.getElementById('dynamic-svg-wrapper');
+                if(dynWrapper) dynWrapper.classList.add('hidden');
+            }
+
+            applyBrandTheme(businessData.brandColor || "#2563eb");
+        }
+
+        document.getElementById('modal-brand-color-picker').addEventListener('input', (e) => document.getElementById('modal-brand-color-hex').value = e.target.value);
+        document.getElementById('modal-brand-color-hex').addEventListener('input', (e) => {
+            if(/^#[0-9A-F]{6}$/i.test(e.target.value)) document.getElementById('modal-brand-color-picker').value = e.target.value;
+        });
+
+        [inputCliente, inputFecha, valPctNino, valPctEspecial, valDisc5, valDisc10, valDisc20, valDisc50, marginBeneficio, inputPrecioUnitarioBase, checkShowFriend, valPctFriend].forEach(el => {
+            el.addEventListener('input', () => { saveState(); updateDisplays(); calculateBudget(); });
+            el.addEventListener('change', () => { saveState(); updateDisplays(); calculateBudget(); });
+        });
+
+        function calculateBudget() {
+            const margin = (parseFloat(marginBeneficio.value) || 0) / 100;
+            const pctNino = (parseFloat(valPctNino.value) || 25) / 100;
+            const pctEspecial = (parseFloat(valPctEspecial.value) || 30) / 100;
+            const pctFriend = (parseFloat(valPctFriend.value) || 10) / 100;
+
+            const disc5Val = parseFloat(valDisc5.value) || 0;
+            const disc10Val = parseFloat(valDisc10.value) || 0;
+            const disc20Val = parseFloat(valDisc20.value) || 0;
+            const disc50Val = parseFloat(valDisc50.value) || 0;
+
+            const showFriend = checkShowFriend.checked;
+            if (showFriend) thFriendPrice.classList.remove('hidden'); else thFriendPrice.classList.add('hidden');
+
+            let totalPrendasGeneral = 0;
+            orderItems.forEach(item => totalPrendasGeneral += (parseInt(item.qty) || 0));
+
+            pricingTableBody.innerHTML = '';
+            let granTotal = 0;
+
+            orderItems.forEach(item => {
+                const q = parseInt(item.qty) || 1;
+                const modelObj = models.find(m => m.id === item.modelId);
+                let unitCost = 0;
+                if (modelObj) {
+                    modelObj.recipe.forEach(rec => {
+                        const insObj = insumos.find(i => i.id === rec.insumoId);
+                        unitCost += (insObj ? insObj.price : 0) * rec.qty;
+                    });
+                }
+                let talleMult = 1;
+                if (item.talle === 'nino') talleMult = (1 - pctNino);
+                if (item.talle === 'especial') talleMult = (1 + pctEspecial);
+
+                const costBasedPrice = unitCost * talleMult * (1 + margin);
+                let effectiveBasePrice = checkUseBasePrice.checked ? Math.max(parseFloat(inputPrecioUnitarioBase.value) || 30000, costBasedPrice) : costBasedPrice;
+
+                let discountPct = 0;
+                if (item.customDiscount !== '' && !isNaN(item.customDiscount)) {
+                    discountPct = parseFloat(item.customDiscount);
+                } else {
+                    if (totalPrendasGeneral >= 50) discountPct = disc50Val;
+                    else if (totalPrendasGeneral >= 20) discountPct = disc20Val;
+                    else if (totalPrendasGeneral >= 10) discountPct = disc10Val;
+                    else if (totalPrendasGeneral >= 5) discountPct = disc5Val;
+                }
+
+                const unitPrice = effectiveBasePrice * (1 - (discountPct / 100));
+                const subTotal = unitPrice * q;
+                granTotal += subTotal;
+
+                const friendSub = subTotal * (1 - pctFriend);
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition';
+                let friendCell = showFriend ? `<td class="p-2.5 text-emerald-600 font-bold text-right">$${Math.round(friendSub).toLocaleString()}</td>` : '';
+
+                tr.innerHTML = `
+                    <td class="p-2.5 font-bold text-slate-800">${modelObj ? modelObj.name : 'Modelo'} <span class="text-[10px] text-slate-500 font-medium">(${item.talle})</span></td>
+                    <td class="p-2.5 text-center font-bold text-slate-700">${q} un.</td>
+                    <td class="p-2.5 text-center font-bold brand-text"><span class="bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">${discountPct}%</span></td>
+                    <td class="p-2.5 text-right font-medium text-slate-600">$${Math.round(unitPrice).toLocaleString()}</td>
+                    ${friendCell}
+                    <td class="p-2.5 text-right font-extrabold text-slate-900">$${Math.round(subTotal).toLocaleString()}</td>
+                `;
+                pricingTableBody.appendChild(tr);
+            });
+
+            displayTotalUnidades.textContent = `Total: ${totalPrendasGeneral} prendas`;
+            displayTotalGeneral.textContent = `$${Math.round(granTotal).toLocaleString()}`;
+        }
+
+        renderInsumos(); renderModels(); renderOrderItems(); loadSavedState(); initBusinessUI(); calculateBudget();
+
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            if(confirm("¿Reiniciar la cotización actual?")) {
+                localStorage.removeItem('taller_current_budget_v30');
+                localStorage.removeItem('taller_order_items_v30');
+                localStorage.removeItem('taller_insumos_v30');
+                localStorage.removeItem('taller_models_v30');
+                location.reload();
+            }
+        });
+
+        // Configuración del Modal (Engranaje)
+        const settingsModal = document.getElementById('settings-modal');
+        document.getElementById('btn-settings').addEventListener('click', () => {
+            document.getElementById('modal-biz-name').value = businessData.name;
+            document.getElementById('modal-biz-details').value = businessData.details;
+            document.getElementById('modal-brand-color-picker').value = businessData.brandColor || "#2563eb";
+            document.getElementById('modal-brand-color-hex').value = businessData.brandColor || "#2563eb";
+            settingsModal.classList.remove('hidden');
+        });
+        document.getElementById('btn-close-settings').addEventListener('click', () => settingsModal.classList.add('hidden'));
+        document.getElementById('btn-close-settings-x').addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+        document.getElementById('btn-save-settings').addEventListener('click', () => {
+            businessData.name = document.getElementById('modal-biz-name').value || "TOTTI Indumentaria";
+            businessData.details = document.getElementById('modal-biz-details').value || "";
+            businessData.brandColor = document.getElementById('modal-brand-color-hex').value || "#2563eb";
+            
+            const file = document.getElementById('modal-biz-logo').files[0];
+            if (file) {
+                const isSvg = file.type === "image/svg+xml" || file.name.endsWith('.svg');
+                const reader = new FileReader();
+                
+                reader.onload = e => {
+                    let content = e.target.result;
+                    if (isSvg) {
+                        content = content.replace(/fill="((?!none)[^"]+)"/g, 'fill="currentColor"');
+                        if (!content.includes('fill=')) {
+                            content = content.replace('<svg', '<svg fill="currentColor"');
+                        }
+                        businessData.logo = content;
+                        businessData.isSvg = true;
+                    } else {
+                        businessData.logo = content;
+                        businessData.isSvg = false;
+                    }
+                    localStorage.setItem('taller_biz_data_v30', JSON.stringify(businessData));
+                    initBusinessUI(); 
+                    settingsModal.classList.add('hidden');
+                };
+
+                if (isSvg) reader.readAsText(file);
+                else reader.readAsDataURL(file);
+            } else {
+                localStorage.setItem('taller_biz_data_v30', JSON.stringify(businessData));
+                initBusinessUI(); 
+                settingsModal.classList.add('hidden');
+            }
+        });
+
+        // Conversión Robusta y Definitiva de SVG a PNG para el PDF
+        document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+            const element = document.getElementById('pdf-content');
+            const logoContainer = document.getElementById('logo-container');
+            const activeSvg = logoContainer.querySelector('svg');
+            const dynamicSvgWrapper = logoContainer.querySelector('#dynamic-svg-wrapper');
+            
+            let targetSvg = activeSvg || (dynamicSvgWrapper ? dynamicSvgWrapper.querySelector('svg') : null);
+            let tempImg = null;
+
+            if (targetSvg) {
+                try {
+                    const currentColor = businessData.brandColor || '#2563eb';
+                    let svgString = new XMLSerializer().serializeToString(targetSvg);
+                    
+                    if (!svgString.includes('xmlns=')) {
+                        svgString = svgString.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+                    }
+                    
+                    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                    const DOMURL = window.URL || window.webkitURL || window;
+                    const url = DOMURL.createObjectURL(svgBlob);
+
+                    const img = new Image();
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = url;
+                    });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 400;
+                    canvas.height = 400;
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.fillStyle = currentColor;
+                    ctx.drawImage(img, 0, 0, 400, 400);
+                    
+                    DOMURL.revokeObjectURL(url);
+
+                    tempImg = document.createElement('img');
+                    tempImg.src = canvas.toDataURL('image/png');
+                    tempImg.className = 'w-full h-full logo-aspect-fit';
+
+                    targetSvg.classList.add('hidden');
+                    if(dynamicSvgWrapper) dynamicSvgWrapper.classList.add('hidden');
+                    logoContainer.appendChild(tempImg);
+                } catch (err) {
+                    console.warn("Error convirtiendo SVG a PNG para PDF:", err);
+                }
+            }
+
+            const opt = {
+                margin: 0,
+                filename: `Presupuesto_${inputCliente.value.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            await html2pdf().from(element).set(opt).save();
+
+            if (tempImg) {
+                tempImg.remove();
+                if (activeSvg) activeSvg.classList.remove('hidden');
+                if (dynamicSvgWrapper) dynamicSvgWrapper.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
